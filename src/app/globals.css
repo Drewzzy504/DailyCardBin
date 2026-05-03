@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+body {
+  color: var(--foreground);
+  background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+  background-size: 200% 200%;
+  animation: breathingBg 15s ease infinite;
+}
+
+@keyframes breathingBg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
