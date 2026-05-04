@@ -47,8 +47,7 @@ export async function POST(request) {
     }
 
     const genAI = new GoogleGenerativeAI(geminiKey);
-    // Use gemini-1.5-flash for fast multimodal tasks
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    let model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
       You are an expert sports card grader and appraiser. 
@@ -74,8 +73,18 @@ export async function POST(request) {
       },
     };
 
-    const result = await model.generateContent([prompt, imagePart]);
-    const responseText = result.response.text();
+    let responseText = "";
+    
+    try {
+      const result = await model.generateContent([prompt, imagePart]);
+      responseText = result.response.text();
+    } catch (e) {
+      console.warn("gemini-1.5-flash failed, falling back to gemini-pro-vision", e.message);
+      // Fallback for older API keys or regional restrictions
+      model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+      const result = await model.generateContent([prompt, imagePart]);
+      responseText = result.response.text();
+    }
     
     // Clean up the response in case Gemini wrapped it in markdown anyway
     let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
