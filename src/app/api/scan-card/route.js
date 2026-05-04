@@ -92,17 +92,9 @@ export async function POST(request) {
       imageParts.push({ inlineData: { data: base64Back, mimeType: mimeTypeBack } });
     }
 
-    let responseText = "";
-    
-    try {
-      const result = await model.generateContent([prompt, ...imageParts]);
-      responseText = result.response.text();
-    } catch (e) {
-      console.warn("gemini-1.5-flash failed, falling back to gemini-pro-vision", e.message);
-      model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const result = await model.generateContent([prompt, ...imageParts]);
-      responseText = result.response.text();
-    }
+    // Call Gemini without fallback to see the real error
+    const result = await model.generateContent([prompt, ...imageParts]);
+    const responseText = result.response.text();
     
     // Clean up the response
     let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
