@@ -227,19 +227,24 @@ export default function AdminScanner() {
         {step === 'front-upload' && (
           <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-300">
             <h2 className="text-emerald-500 font-bold uppercase tracking-wider text-sm">Step 1: Front of Card</h2>
-            <input 
-              type="file" accept="image/*" 
-              onChange={handleFrontFileChange} ref={frontInputRef} className="hidden" id="frontInput"
-            />
-            <label htmlFor="frontInput" className="w-full aspect-[3/4] max-w-sm border-2 border-dashed border-emerald-500/50 hover:border-emerald-500 bg-emerald-500/5 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors group">
-              <div className="text-emerald-500/70 flex flex-col items-center group-hover:text-emerald-500">
-                <svg className="w-12 h-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="font-medium tracking-wide">Capture Front</span>
-              </div>
-            </label>
+            
+            <div className="flex gap-4 w-full max-w-sm">
+              <input type="file" accept="image/*" capture="environment" onChange={handleFrontFileChange} ref={frontInputRef} className="hidden" id="frontInputCamera" />
+              <label htmlFor="frontInputCamera" className="flex-1 aspect-square border-2 border-dashed border-emerald-500/50 hover:border-emerald-500 bg-emerald-500/5 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors group">
+                <div className="text-emerald-500/70 flex flex-col items-center group-hover:text-emerald-500 p-4 text-center">
+                  <svg className="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <span className="font-bold text-sm tracking-wide">Take Photo</span>
+                </div>
+              </label>
+
+              <input type="file" accept="image/*" onChange={handleFrontFileChange} className="hidden" id="frontInputGallery" />
+              <label htmlFor="frontInputGallery" className="flex-1 aspect-square border-2 border-dashed border-emerald-500/50 hover:border-emerald-500 bg-emerald-500/5 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors group">
+                <div className="text-emerald-500/70 flex flex-col items-center group-hover:text-emerald-500 p-4 text-center">
+                  <svg className="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  <span className="font-bold text-sm tracking-wide">Upload Gallery</span>
+                </div>
+              </label>
+            </div>
           </div>
         )}
 
@@ -265,19 +270,25 @@ export default function AdminScanner() {
             <h2 className="text-emerald-500 font-bold uppercase tracking-wider text-sm">Step 2: Back of Card</h2>
             <p className="text-xs text-slate-400 text-center max-w-xs -mt-4">Providing the back photo helps the AI identify the Year & Set much more accurately!</p>
             
-            <input 
-              type="file" accept="image/*" 
-              onChange={handleBackFileChange} ref={backInputRef} className="hidden" id="backInput"
-            />
-            <label htmlFor="backInput" className="w-full aspect-[3/4] max-w-sm border-2 border-dashed border-amber-500/50 hover:border-amber-500 bg-amber-500/5 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors group">
-              <div className="text-amber-500/70 flex flex-col items-center group-hover:text-amber-500">
-                <svg className="w-12 h-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span className="font-medium tracking-wide">Capture Back (Optional)</span>
-              </div>
-            </label>
-            <button onClick={skipBackImage} className="text-slate-400 hover:text-white text-sm underline">
+            <div className="flex gap-4 w-full max-w-sm">
+              <input type="file" accept="image/*" capture="environment" onChange={handleBackFileChange} ref={backInputRef} className="hidden" id="backInputCamera" />
+              <label htmlFor="backInputCamera" className="flex-1 aspect-square border-2 border-dashed border-amber-500/50 hover:border-amber-500 bg-amber-500/5 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors group">
+                <div className="text-amber-500/70 flex flex-col items-center group-hover:text-amber-500 p-4 text-center">
+                  <svg className="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <span className="font-bold text-sm tracking-wide">Take Photo</span>
+                </div>
+              </label>
+
+              <input type="file" accept="image/*" onChange={handleBackFileChange} className="hidden" id="backInputGallery" />
+              <label htmlFor="backInputGallery" className="flex-1 aspect-square border-2 border-dashed border-amber-500/50 hover:border-amber-500 bg-amber-500/5 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors group">
+                <div className="text-amber-500/70 flex flex-col items-center group-hover:text-amber-500 p-4 text-center">
+                  <svg className="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  <span className="font-bold text-sm tracking-wide">Upload Gallery</span>
+                </div>
+              </label>
+            </div>
+            
+            <button onClick={skipBackImage} className="text-slate-400 hover:text-white text-sm underline mt-2">
               Skip Back Image
             </button>
           </div>
