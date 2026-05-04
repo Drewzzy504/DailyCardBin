@@ -74,12 +74,18 @@ export async function POST(request) {
       1. Name: The full name of the player.
       2. Set: The brand and set name (e.g., "Topps Chrome", "Panini Prizm").
       3. Year: The year of the card (e.g., "2003", "1989"). If you only see a season like "19-20", write "2019".
+      4. Parallel: The specific color or parallel type if any (e.g., "Silver Prizm", "Red Refractor"). Leave empty if it's just a base card.
+      5. Serial: Any serial numbering printed or stamped on the card (e.g., "10/99", "1/1"). Leave empty if none.
+      6. Auto: true or false. Is the card visibly autographed/signed by the player?
       
       Respond ONLY with a valid, raw JSON object exactly like this:
       {
         "Name": "Player Name",
         "Set": "Brand Set",
-        "Year": "YYYY"
+        "Year": "YYYY",
+        "Parallel": "Color/Parallel Name",
+        "Serial": "Numbering",
+        "Auto": false
       }
       Do not include markdown formatting (like \`\`\`json) or any other text. Just the raw JSON object.
     `;
@@ -99,7 +105,7 @@ export async function POST(request) {
     // Clean up the response
     let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
     
-    let cardData = { Name: "Unknown", Set: "Unknown", Year: "Unknown" };
+    let cardData = { Name: "Unknown", Set: "Unknown", Year: "Unknown", Parallel: "", Serial: "", Auto: false };
 
     try {
       cardData = JSON.parse(cleanedText);
@@ -114,6 +120,9 @@ export async function POST(request) {
         Name: cardData.Name || "Unknown",
         Set: cardData.Set || "Unknown",
         Year: cardData.Year || "Unknown",
+        Parallel: cardData.Parallel || "",
+        Serial: cardData.Serial || "",
+        Auto: cardData.Auto || false,
         ImageURL: imageUrlFront,
         ImageURLBack: imageUrlBack
       }

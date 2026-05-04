@@ -154,8 +154,30 @@ function Card({ card, isTop, relativeIndex, handleDragEnd }) {
             ) : (
               <div className="w-full h-full flex items-center justify-center text-slate-700 bg-slate-950 font-medium">No Image</div>
             )}
+            
+            {/* Price Badge */}
             <div className="absolute top-4 right-4 z-10 bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-bold px-4 py-1.5 rounded-full shadow-lg border border-amber-300">
               ${card.PriceBin} Bin
+            </div>
+
+            {/* Special Features Badges */}
+            <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 items-start pointer-events-none">
+              {card.Auto && (
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded shadow-lg border border-blue-400/50 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                  Auto
+                </div>
+              )}
+              {card.Serial && (
+                <div className="bg-slate-900/90 text-amber-400 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded shadow-lg border border-slate-700 font-mono">
+                  # {card.Serial}
+                </div>
+              )}
+              {card.Parallel && (
+                <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded shadow-lg border border-white/20 shadow-[0_0_15px_rgba(236,72,153,0.3)] backdrop-blur-sm truncate max-w-[150px]">
+                  {card.Parallel}
+                </div>
+              )}
             </div>
             {card.ImageURLBack && (
               <div className="absolute bottom-4 right-4 z-10 bg-slate-900/80 backdrop-blur-sm border border-slate-700 text-white font-medium text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">

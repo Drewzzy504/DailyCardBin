@@ -126,8 +126,11 @@ export default function AdminScanner() {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setScannedData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setScannedData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
   };
 
   const handleSubmitToSheet = async (e) => {
@@ -145,6 +148,9 @@ export default function AdminScanner() {
         Set: scannedData.Set,
         Year: scannedData.Year,
         PriceBin: parseInt(scannedData.PriceBin) || 0,
+        Parallel: scannedData.Parallel || "",
+        Serial: scannedData.Serial || "",
+        Auto: scannedData.Auto || false,
         ImageURL: scannedData.ImageURL,
         ImageURLBack: scannedData.ImageURLBack || "",
         Approved: false,
@@ -402,20 +408,51 @@ export default function AdminScanner() {
                   />
                 </div>
               </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Parallel / Color</label>
+                  <input 
+                    type="text" name="Parallel" value={scannedData.Parallel} onChange={handleInputChange} placeholder="e.g. Silver Prizm"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-amber-400 focus:outline-none focus:border-amber-500 transition-colors placeholder:text-slate-700"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Serial Num</label>
+                  <input 
+                    type="text" name="Serial" value={scannedData.Serial} onChange={handleInputChange} placeholder="e.g. 10/99"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-amber-400 focus:outline-none focus:border-amber-500 transition-colors placeholder:text-slate-700"
+                  />
+                </div>
+              </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Price Bin</label>
-                <select 
-                  name="PriceBin" value={scannedData.PriceBin} onChange={handleInputChange}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors appearance-none"
-                >
-                  <option value="1">$1 Bin</option>
-                  <option value="3">$3 Bin</option>
-                  <option value="5">$5 Bin</option>
-                  <option value="10">$10 Bin</option>
-                  <option value="20">$20 Bin</option>
-                  <option value="25">Premium (Type exact price later)</option>
-                </select>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Price Bin</label>
+                  <select 
+                    name="PriceBin" value={scannedData.PriceBin} onChange={handleInputChange}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors appearance-none"
+                  >
+                    <option value="1">$1 Bin</option>
+                    <option value="3">$3 Bin</option>
+                    <option value="5">$5 Bin</option>
+                    <option value="10">$10 Bin</option>
+                    <option value="20">$20 Bin</option>
+                    <option value="25">Premium (Type exact price later)</option>
+                  </select>
+                </div>
+                <div className="flex items-center justify-center bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 mt-5">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      name="Auto" 
+                      checked={scannedData.Auto} 
+                      onChange={handleInputChange}
+                      className="w-5 h-5 accent-emerald-500 bg-slate-900 border-slate-700 rounded"
+                    />
+                    <span className="text-sm font-bold text-slate-300 uppercase tracking-wider">Autograph</span>
+                  </label>
+                </div>
               </div>
             </div>
 
