@@ -147,6 +147,7 @@ export default function AdminScanner() {
         Name: scannedData.Name,
         Set: scannedData.Set,
         Year: scannedData.Year,
+        Category: scannedData.Category || "Other",
         PriceBin: parseInt(scannedData.PriceBin) || 0,
         Parallel: scannedData.Parallel || "",
         Serial: scannedData.Serial || "",
@@ -407,6 +408,26 @@ export default function AdminScanner() {
                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Category</label>
+                <select 
+                  name="Category" value={scannedData.Category} onChange={handleInputChange}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-emerald-400 font-bold focus:outline-none focus:border-amber-500 transition-colors appearance-none"
+                >
+                  <option value="Baseball">Baseball</option>
+                  <option value="Basketball">Basketball</option>
+                  <option value="Football">Football</option>
+                  <option value="Soccer">Soccer</option>
+                  <option value="Hockey">Hockey</option>
+                  <option value="Racing">Racing</option>
+                  <option value="Fighting">Fighting (UFC/WWE)</option>
+                  <option value="Pokemon">Pokemon</option>
+                  <option value="Magic">Magic</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
               
               <div className="grid grid-cols-2 gap-4">

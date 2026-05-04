@@ -74,15 +74,17 @@ export async function POST(request) {
       1. Name: The full name of the player.
       2. Set: The brand and set name (e.g., "Topps Chrome", "Panini Prizm").
       3. Year: The year of the card (e.g., "2003", "1989"). If you only see a season like "19-20", write "2019".
-      4. Parallel: The specific color or parallel type if any (e.g., "Silver Prizm", "Red Refractor"). Leave empty if it's just a base card.
-      5. Serial: Any serial numbering printed or stamped on the card (e.g., "10/99", "1/1"). Leave empty if none.
-      6. Auto: true or false. Is the card visibly autographed/signed by the player?
+      4. Category: Identify the sport or category. Must be one of: Baseball, Basketball, Football, Soccer, Hockey, Racing, Fighting, Pokemon, Magic, Entertainment, Other.
+      5. Parallel: The specific color or parallel type if any (e.g., "Silver Prizm", "Red Refractor"). Leave empty if it's just a base card.
+      6. Serial: Any serial numbering printed or stamped on the card (e.g., "10/99", "1/1"). Leave empty if none.
+      7. Auto: true or false. Is the card visibly autographed/signed by the player?
       
       Respond ONLY with a valid, raw JSON object exactly like this:
       {
         "Name": "Player Name",
         "Set": "Brand Set",
         "Year": "YYYY",
+        "Category": "Basketball",
         "Parallel": "Color/Parallel Name",
         "Serial": "Numbering",
         "Auto": false
@@ -105,7 +107,7 @@ export async function POST(request) {
     // Clean up the response
     let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
     
-    let cardData = { Name: "Unknown", Set: "Unknown", Year: "Unknown", Parallel: "", Serial: "", Auto: false };
+    let cardData = { Name: "Unknown", Set: "Unknown", Year: "Unknown", Category: "Other", Parallel: "", Serial: "", Auto: false };
 
     try {
       cardData = JSON.parse(cleanedText);
@@ -120,6 +122,7 @@ export async function POST(request) {
         Name: cardData.Name || "Unknown",
         Set: cardData.Set || "Unknown",
         Year: cardData.Year || "Unknown",
+        Category: cardData.Category || "Other",
         Parallel: cardData.Parallel || "",
         Serial: cardData.Serial || "",
         Auto: cardData.Auto || false,

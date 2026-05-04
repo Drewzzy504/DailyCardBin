@@ -4,12 +4,14 @@ import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import SwipingDeck from './SwipingDeck';
 import BinSelector from './BinSelector';
+import CategorySelector from './CategorySelector';
 
 export default function InventoryLoader() {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeBin, setActiveBin] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('all');
 
   useEffect(() => {
     async function fetchInventory() {
@@ -32,22 +34,26 @@ export default function InventoryLoader() {
     fetchInventory();
   }, []);
 
-  // Filter the inventory based on the active bin
+  // Filter the inventory based on the active bin and category
   const filteredInventory = useMemo(() => {
-    if (activeBin === 'all') return inventory;
-    
-    return inventory.filter(item => {
-      const price = parseFloat(item.PriceBin) || 0;
-      
-      if (activeBin === 'premium') {
-        // Anything above $20 is premium
-        return price > 20;
-      }
-      
-      // Strict match for 1, 3, 5, 10, 20
-      return item.PriceBin.toString() === activeBin;
-    });
-  }, [inventory, activeBin]);
+    let filtered = inventory;
+
+    // Filter by Category
+    if (activeCategory !== 'all') {
+      filtered = filtered.filter(item => item.Category === activeCategory);
+    }
+
+    // Filter by Price Bin
+    if (activeBin !== 'all') {
+      filtered = filtered.filter(item => {
+        const price = parseFloat(item.PriceBin) || 0;
+        if (activeBin === 'premium') return price > 20;
+        return item.PriceBin.toString() === activeBin;
+      });
+    }
+
+    return filtered;
+  }, [inventory, activeBin, activeCategory]);
 
   if (loading) {
     return (
@@ -74,7 +80,8 @@ export default function InventoryLoader() {
   }
 
   return (
-    <div className="w-full flex flex-col items-center mt-8">
+    <div className="w-full flex flex-col items-center mt-4">
+      <CategorySelector activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
       <BinSelector activeBin={activeBin} setActiveBin={setActiveBin} />
       <SwipingDeck inventory={filteredInventory} />
     </div>
