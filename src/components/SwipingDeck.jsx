@@ -8,19 +8,14 @@ export default function SwipingDeck({ inventory }) {
   const [cards, setCards] = useState(inventory);
   const { bundle, addToBundle } = useBundle();
 
-  // Reset the deck when the inventory prop changes (e.g., when switching bins)
   useEffect(() => {
-    // Filter out items already in the bundle so they don't reappear immediately upon bin switch
     const available = inventory.filter(invCard => !bundle.some(b => b.ID === invCard.ID));
     setCards(available);
   }, [inventory, bundle]);
 
-  // Infinite Loop Logic
   useEffect(() => {
     if (cards.length === 0 && inventory.length > 0) {
-      // When deck runs out, filter the original inventory against what's already in the bundle
       const remainingCards = inventory.filter(invCard => !bundle.some(b => b.ID === invCard.ID));
-      // Only replenish if there are actually cards left to show
       if (remainingCards.length > 0) {
         setCards(remainingCards);
       }
@@ -30,12 +25,10 @@ export default function SwipingDeck({ inventory }) {
   const handleDragEnd = (event, info, card) => {
     const swipeThreshold = 100;
     
-    // Swipe Right (Add to Bundle)
     if (info.offset.x > swipeThreshold) {
       addToBundle(card);
       setCards((prev) => prev.slice(1));
     } 
-    // Swipe Left (Dismiss)
     else if (info.offset.x < -swipeThreshold) {
       setCards((prev) => prev.slice(1));
     }
@@ -54,18 +47,15 @@ export default function SwipingDeck({ inventory }) {
   }
 
   return (
-    <div className="relative w-full max-w-sm mx-auto h-[500px] flex items-center justify-center">
+    <div className="relative w-full max-w-sm mx-auto h-[500px] flex items-center justify-center perspective-[1000px]">
       <AnimatePresence>
         {cards.slice(0, 3).reverse().map((card, idx) => {
-          // Because we reverse the array, the top card is the last one in the mapped array (index === 2 if there are 3 cards)
           const isTop = idx === cards.slice(0, 3).length - 1;
-          
-          // Index relative to the top card (0 = top, 1 = second, 2 = third)
           const relativeIndex = cards.slice(0, 3).length - 1 - idx;
 
           return (
             <Card
-              key={`${card.ID}-${cards.length}`} // Ensure unique key for re-renders on loop
+              key={`${card.ID}-${cards.length}`}
               card={card}
               isTop={isTop}
               relativeIndex={relativeIndex}
@@ -75,7 +65,6 @@ export default function SwipingDeck({ inventory }) {
         })}
       </AnimatePresence>
 
-      {/* Swipe Instructions Overlay */}
       <div className="absolute -bottom-16 left-0 right-0 flex justify-between px-8 pointer-events-none opacity-50">
         <div className="flex flex-col items-center text-rose-500">
           <svg className="w-8 h-8 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -94,105 +83,112 @@ export default function SwipingDeck({ inventory }) {
   );
 }
 
-// Separate component for individual cards to handle motion values per card
 function Card({ card, isTop, relativeIndex, handleDragEnd }) {
+  const [isFlipped, setIsFlipped] = useState(false);
   const x = useMotionValue(0);
   
-  // Rotate slightly based on drag distance
   const rotate = useTransform(x, [-200, 200], [-10, 10]);
-  
-  // Opacity overlays for swipe indicators
   const swipeRightOpacity = useTransform(x, [0, 100], [0, 1]);
   const swipeLeftOpacity = useTransform(x, [0, -100], [0, 1]);
-
-  // Stamping Scale Effect (starts large and stamps down to normal size as opacity increases)
   const stampScaleRight = useTransform(x, [0, 100], [1.5, 1]);
   const stampScaleLeft = useTransform(x, [0, -100], [1.5, 1]);
 
   return (
     <motion.div
-      className="absolute w-full h-[450px] rounded-2xl bg-slate-800 border border-slate-700 flex flex-col overflow-hidden will-change-transform cursor-grab active:cursor-grabbing"
+      className="absolute w-full h-[450px] flex flex-col will-change-transform cursor-grab active:cursor-grabbing"
       style={{
         x: isTop ? x : 0,
         rotate: isTop ? rotate : 0,
         zIndex: isTop ? 10 : 10 - relativeIndex,
-        // The neon glow: only on top card
-        boxShadow: isTop 
-          ? "0 0 40px 5px rgba(16, 185, 129, 0.25), 0 0 20px 2px rgba(245, 158, 11, 0.15), 0 10px 15px -3px rgba(0, 0, 0, 0.5)" 
-          : "0 10px 15px -3px rgba(0, 0, 0, 0.5)",
+        perspective: 1000
       }}
-      initial={{ 
-        scale: 1 - relativeIndex * 0.05, 
-        y: relativeIndex * 20, 
-        opacity: 0 
-      }}
-      animate={{ 
-        scale: 1 - relativeIndex * 0.05, 
-        y: relativeIndex * 20, 
-        opacity: 1 - relativeIndex * 0.2
-      }}
-      exit={{ 
-        x: x.get() > 0 ? 300 : -300, 
-        opacity: 0, 
-        transition: { duration: 0.2 } 
-      }}
+      initial={{ scale: 1 - relativeIndex * 0.05, y: relativeIndex * 20, opacity: 0 }}
+      animate={{ scale: 1 - relativeIndex * 0.05, y: relativeIndex * 20, opacity: 1 - relativeIndex * 0.2 }}
+      exit={{ x: x.get() > 0 ? 300 : -300, opacity: 0, transition: { duration: 0.2 } }}
       drag={isTop ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={handleDragEnd}
-      whileTap={{ scale: 1.02 }}
     >
-      {/* Dynamic Overlay for Swiping Actions */}
-      {isTop && (
-        <>
-          <motion.div 
-            style={{ opacity: swipeRightOpacity }}
-            className="absolute inset-0 z-20 bg-emerald-500/20 border-4 border-emerald-500 rounded-2xl pointer-events-none flex items-center justify-center overflow-hidden"
-          >
-            <motion.div 
-              style={{ scale: stampScaleRight }}
-              className="border-4 border-emerald-500 text-emerald-500 text-5xl font-black uppercase tracking-widest px-8 py-3 rounded-xl transform -rotate-12 bg-slate-900/80 backdrop-blur-md shadow-[0_0_30px_rgba(16,185,129,0.5)]"
-            >
-              KEEP
-            </motion.div>
-          </motion.div>
-          <motion.div 
-            style={{ opacity: swipeLeftOpacity }}
-            className="absolute inset-0 z-20 bg-rose-500/20 border-4 border-rose-500 rounded-2xl pointer-events-none flex items-center justify-center overflow-hidden"
-          >
-            <motion.div 
-              style={{ scale: stampScaleLeft }}
-              className="border-4 border-rose-500 text-rose-500 text-5xl font-black uppercase tracking-widest px-8 py-3 rounded-xl transform rotate-12 bg-slate-900/80 backdrop-blur-md shadow-[0_0_30px_rgba(243,64,84,0.5)]"
-            >
-              PASS
-            </motion.div>
-          </motion.div>
-        </>
-      )}
-
-      {/* Card Image Area */}
-      <div className="relative flex-1 bg-slate-900 border-b border-slate-700 overflow-hidden">
-        {card.ImageURL ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={card.ImageURL} alt={card.Name} className="w-full h-full object-cover select-none pointer-events-none" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-700 bg-slate-950 font-medium">
-            No Image Provided
+      <motion.div
+        className="w-full h-full relative"
+        style={{ transformStyle: "preserve-3d" }}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
+        onTap={() => {
+          // Only allow flipping the top card if it has a back image
+          if (isTop && card.ImageURLBack) {
+            setIsFlipped(!isFlipped);
+          }
+        }}
+      >
+        {/* FRONT FACE */}
+        <div 
+          className="absolute inset-0 rounded-2xl bg-slate-800 border border-slate-700 flex flex-col overflow-hidden"
+          style={{ 
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            boxShadow: isTop 
+            ? "0 0 40px 5px rgba(16, 185, 129, 0.25), 0 0 20px 2px rgba(245, 158, 11, 0.15), 0 10px 15px -3px rgba(0, 0, 0, 0.5)" 
+            : "0 10px 15px -3px rgba(0, 0, 0, 0.5)"
+          }}
+        >
+          {isTop && (
+            <>
+              <motion.div style={{ opacity: swipeRightOpacity }} className="absolute inset-0 z-20 bg-emerald-500/20 border-4 border-emerald-500 rounded-2xl pointer-events-none flex items-center justify-center overflow-hidden">
+                <motion.div style={{ scale: stampScaleRight }} className="border-4 border-emerald-500 text-emerald-500 text-5xl font-black uppercase tracking-widest px-8 py-3 rounded-xl transform -rotate-12 bg-slate-900/80 backdrop-blur-md shadow-[0_0_30px_rgba(16,185,129,0.5)]">
+                  KEEP
+                </motion.div>
+              </motion.div>
+              <motion.div style={{ opacity: swipeLeftOpacity }} className="absolute inset-0 z-20 bg-rose-500/20 border-4 border-rose-500 rounded-2xl pointer-events-none flex items-center justify-center overflow-hidden">
+                <motion.div style={{ scale: stampScaleLeft }} className="border-4 border-rose-500 text-rose-500 text-5xl font-black uppercase tracking-widest px-8 py-3 rounded-xl transform rotate-12 bg-slate-900/80 backdrop-blur-md shadow-[0_0_30px_rgba(243,64,84,0.5)]">
+                  PASS
+                </motion.div>
+              </motion.div>
+            </>
+          )}
+          
+          <div className="relative flex-1 bg-slate-900 border-b border-slate-700 overflow-hidden">
+            {card.ImageURL ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={card.ImageURL} alt={card.Name} className="w-full h-full object-cover select-none pointer-events-none" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-slate-700 bg-slate-950 font-medium">No Image</div>
+            )}
+            <div className="absolute top-4 right-4 z-10 bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-bold px-4 py-1.5 rounded-full shadow-lg border border-amber-300">
+              ${card.PriceBin} Bin
+            </div>
+            {card.ImageURLBack && (
+              <div className="absolute bottom-4 right-4 z-10 bg-slate-900/80 backdrop-blur-sm border border-slate-700 text-white font-medium text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                Tap to Flip
+              </div>
+            )}
           </div>
-        )}
-        
-        {/* Tier Label (Gold Accent) */}
-        <div className="absolute top-4 right-4 z-10 bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-bold px-4 py-1.5 rounded-full shadow-lg border border-amber-300">
-          ${card.PriceBin} Bin
+          <div className="p-6 bg-slate-800">
+            <h3 className="text-2xl font-bold text-white mb-1 truncate">{card.Name}</h3>
+            <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">{card.Set} <span className="text-slate-600 mx-1">•</span> {card.Year}</p>
+          </div>
         </div>
-      </div>
 
-      {/* Card Details */}
-      <div className="p-6 bg-slate-800">
-        <h3 className="text-2xl font-bold text-white mb-1 truncate">{card.Name}</h3>
-        <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">
-          {card.Set} <span className="text-slate-600 mx-1">•</span> {card.Year}
-        </p>
-      </div>
+        {/* BACK FACE */}
+        <div 
+          className="absolute inset-0 rounded-2xl bg-slate-800 border border-slate-700 flex flex-col overflow-hidden"
+          style={{ 
+            backfaceVisibility: "hidden", 
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            boxShadow: isTop ? "0 0 20px 2px rgba(255, 255, 255, 0.1), 0 10px 15px -3px rgba(0, 0, 0, 0.5)" : "none"
+          }}
+        >
+          <div className="relative flex-1 bg-slate-900 overflow-hidden h-full">
+            {card.ImageURLBack && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={card.ImageURLBack} alt={`${card.Name} Back`} className="w-full h-full object-cover select-none pointer-events-none" />
+            )}
+          </div>
+        </div>
+
+      </motion.div>
     </motion.div>
   );
 }
