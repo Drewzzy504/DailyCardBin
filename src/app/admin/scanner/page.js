@@ -228,7 +228,7 @@ export default function AdminScanner() {
           <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-300">
             <h2 className="text-emerald-500 font-bold uppercase tracking-wider text-sm">Step 1: Front of Card</h2>
             <input 
-              type="file" accept="image/*" capture="environment" 
+              type="file" accept="image/*" 
               onChange={handleFrontFileChange} ref={frontInputRef} className="hidden" id="frontInput"
             />
             <label htmlFor="frontInput" className="w-full aspect-[3/4] max-w-sm border-2 border-dashed border-emerald-500/50 hover:border-emerald-500 bg-emerald-500/5 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors group">
@@ -266,7 +266,7 @@ export default function AdminScanner() {
             <p className="text-xs text-slate-400 text-center max-w-xs -mt-4">Providing the back photo helps the AI identify the Year & Set much more accurately!</p>
             
             <input 
-              type="file" accept="image/*" capture="environment" 
+              type="file" accept="image/*" 
               onChange={handleBackFileChange} ref={backInputRef} className="hidden" id="backInput"
             />
             <label htmlFor="backInput" className="w-full aspect-[3/4] max-w-sm border-2 border-dashed border-amber-500/50 hover:border-amber-500 bg-amber-500/5 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors group">
