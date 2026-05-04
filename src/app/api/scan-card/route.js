@@ -64,7 +64,7 @@ export async function POST(request) {
     if (!geminiKey) throw new Error('GEMINI_API_KEY is not configured in .env.local');
 
     const genAI = new GoogleGenerativeAI(geminiKey);
-    let model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    let model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
       You are an expert sports card grader and appraiser. 
