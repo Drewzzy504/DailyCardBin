@@ -29,6 +29,7 @@ export default function AdminScanner() {
   const [scannedData, setScannedData] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [premiumPrice, setPremiumPrice] = useState('');
   
   const frontInputRef = useRef(null);
   const backInputRef = useRef(null);
@@ -168,6 +169,9 @@ export default function AdminScanner() {
       ...prev, 
       [name]: type === 'checkbox' ? checked : value 
     }));
+    if (name === 'PriceBin' && value !== 'Premium') {
+      setPremiumPrice('');
+    }
   };
 
   const handleSubmitToSheet = async (e) => {
@@ -185,7 +189,7 @@ export default function AdminScanner() {
         Set: scannedData.Set,
         Year: scannedData.Year,
         Category: scannedData.Category || "Other",
-        PriceBin: parseInt(scannedData.PriceBin) || 0,
+        PriceBin: scannedData.PriceBin === "Premium" ? parseFloat(premiumPrice) || 0 : parseInt(scannedData.PriceBin) || 0,
         Parallel: scannedData.Parallel || "",
         Serial: scannedData.Serial || "",
         Auto: scannedData.Auto || false,
@@ -215,6 +219,7 @@ export default function AdminScanner() {
       setBackBlob(null);
       setBackPreview(null);
       setScannedData(null);
+      setPremiumPrice('');
       if (frontInputRef.current) frontInputRef.current.value = '';
       if (backInputRef.current) backInputRef.current.value = '';
 
@@ -234,6 +239,7 @@ export default function AdminScanner() {
     setBackBlob(null);
     setBackPreview(null);
     setScannedData(null);
+    setPremiumPrice('');
     setError('');
   };
 
@@ -507,8 +513,19 @@ export default function AdminScanner() {
                     <option value="5">$5 Bin</option>
                     <option value="10">$10 Bin</option>
                     <option value="20">$20 Bin</option>
-                    <option value="25">Premium (Type exact price later)</option>
+                    <option value="Premium">Premium</option>
                   </select>
+                  {scannedData.PriceBin === 'Premium' && (
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="Enter exact price (e.g. 25.99)"
+                      value={premiumPrice}
+                      onChange={(e) => setPremiumPrice(e.target.value)}
+                      className="w-full mt-2 bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
+                      required
+                    />
+                  )}
                 </div>
                 <div className="flex items-center justify-center bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 mt-5">
                   <label className="flex items-center gap-3 cursor-pointer">
