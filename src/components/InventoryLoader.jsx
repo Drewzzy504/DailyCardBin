@@ -40,7 +40,12 @@ export default function InventoryLoader() {
 
     // Filter by Category
     if (activeCategory !== 'all') {
-      filtered = filtered.filter(item => item.Category === activeCategory);
+      filtered = filtered.filter((item) => {
+        const itemCategory = String(item.Category ?? item.category ?? item.Sport ?? item.sport ?? 'Other')
+          .trim()
+          .toLowerCase();
+        return itemCategory === activeCategory.toLowerCase();
+      });
     }
 
     // Filter by Price Bin

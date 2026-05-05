@@ -113,11 +113,48 @@ export default function AdminScanner() {
 
       setScannedData({
         ...data.data,
-        PriceBin: "1" // Default
+        PriceBin: "1",
+        Category: data.data.Category || 'Other',
       });
       
       setStep('review');
       
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  const handleManualEntry = async () => {
+    if (!frontBlob) return;
+    setScanning(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', frontBlob, 'front.jpg');
+      if (backBlob) {
+        formData.append('imageBack', backBlob, 'back.jpg');
+      }
+      formData.append('manual', 'true');
+
+      const res = await fetch('/api/scan-card', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to prepare manual entry');
+      }
+
+      setScannedData({
+        ...data.data,
+        PriceBin: "1",
+        Category: data.data.Category || 'Other',
+      });
+      setStep('review');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -342,23 +379,34 @@ export default function AdminScanner() {
               )}
             </div>
             
-            <button 
-              onClick={handleScan}
-              disabled={scanning}
-              className="w-full max-w-sm py-4 mt-4 rounded-xl font-bold text-lg bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-            >
-              {scanning ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-slate-950" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  AI Analyzing...
-                </>
-              ) : (
-                <>Analyze Card <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></>
-              )}
-            </button>
+            <div className="flex flex-col gap-3 w-full max-w-sm">
+              <button 
+                onClick={handleScan}
+                disabled={scanning}
+                className="w-full py-4 rounded-xl font-bold text-lg bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+              >
+                {scanning ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-slate-950" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    AI Analyzing...
+                  </>
+                ) : (
+                  <>Analyze Card <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleManualEntry}
+                disabled={scanning}
+                className="w-full py-4 rounded-xl font-bold text-lg bg-slate-800 hover:bg-slate-700 text-slate-100 transition-all disabled:opacity-50 border border-slate-700"
+              >
+                {scanning ? 'Preparing Manual Entry...' : 'Enter Details Manually'}
+              </button>
+            </div>
           </div>
         )}
 

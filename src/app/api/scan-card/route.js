@@ -59,6 +59,24 @@ export async function POST(request) {
     const imageUrlFront = urls[0];
     const imageUrlBack = urls[1] || "";
 
+    const manualMode = String(formData.get('manual') || '').toLowerCase() === 'true';
+    if (manualMode) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          Name: 'Unknown',
+          Set: 'Unknown',
+          Year: 'Unknown',
+          Category: 'Other',
+          Parallel: '',
+          Serial: '',
+          Auto: false,
+          ImageURL: imageUrlFront,
+          ImageURLBack: imageUrlBack,
+        }
+      });
+    }
+
     // 3. Analyze with Gemini
     const geminiKey = process.env.GEMINI_API_KEY;
     if (!geminiKey) throw new Error('GEMINI_API_KEY is not configured in .env.local');
