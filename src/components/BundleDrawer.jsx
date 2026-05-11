@@ -1,15 +1,49 @@
 "use client";
 
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBundle } from './BundleContext';
 
 export default function BundleDrawer() {
   const { 
     bundle, 
-    removeFromBundle, 
+    removeFromBundle,
+    clearBundle,
     isDrawerOpen, 
     toggleDrawer, 
   } = useBundle();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resultMessage, setResultMessage] = useState(null);
+
+  const handleGenerateDrafts = async () => {
+    if (bundle.length === 0) return;
+    setIsSubmitting(true);
+    setResultMessage(null);
+
+    try {
+      const response = await fetch('/api/create-ebay-drafts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cards: bundle }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setResultMessage({ type: 'success', text: `Successfully created ${bundle.length} eBay drafts!` });
+        clearBundle();
+      } else {
+        setResultMessage({ type: 'error', text: data.error || 'Some drafts failed to create. Check logs.' });
+      }
+    } catch (error) {
+      setResultMessage({ type: 'error', text: 'Network error. Could not connect to the API.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -111,14 +145,22 @@ export default function BundleDrawer() {
 
             {/* Footer */}
             <div className="p-6 border-t border-slate-800 bg-slate-900/90 backdrop-blur-md relative">
+              {resultMessage && (
+                <div className={`mb-4 p-3 rounded-lg text-sm font-medium ${resultMessage.type === 'success' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}`}>
+                  {resultMessage.text}
+                </div>
+              )}
               <button 
-                disabled={bundle.length === 0}
+                onClick={handleGenerateDrafts}
+                disabled={bundle.length === 0 || isSubmitting}
                 className="w-full py-4 rounded-xl font-black tracking-widest uppercase text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]"
               >
-                Generate eBay Drafts
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+                {isSubmitting ? 'Creating Drafts...' : 'Generate eBay Drafts'}
+                {!isSubmitting && (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                )}
               </button>
             </div>
           </motion.div>

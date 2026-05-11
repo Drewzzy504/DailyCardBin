@@ -1,17 +1,20 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# DailyCardBin: Inventory Tracker & eBay Lister
+
+This is a Next.js application designed to scan sports cards using AI, track them in a Google Sheet, and generate draft listings on eBay.
+
+## Setup
+
+1. Copy `.env.example` to `.env.local`.
+2. Fill in the required API keys (Gemini, ImgBB, Google Apps Script, and eBay OAuth).
+3. Ensure you have your eBay Policy IDs set up.
 
 ## Getting Started
 
 First, run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

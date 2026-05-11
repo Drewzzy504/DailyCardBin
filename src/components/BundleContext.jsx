@@ -20,6 +20,8 @@ export function BundleProvider({ children }) {
     setBundle((prev) => prev.filter((item) => item.ID !== cardId));
   };
 
+  const clearBundle = () => setBundle([]);
+
   const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
   
   return (
@@ -28,6 +30,7 @@ export function BundleProvider({ children }) {
         bundle,
         addToBundle,
         removeFromBundle,
+        clearBundle,
         isDrawerOpen,
         setIsDrawerOpen,
         toggleDrawer,
