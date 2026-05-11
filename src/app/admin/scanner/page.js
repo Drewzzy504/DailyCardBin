@@ -183,6 +183,11 @@ export default function AdminScanner() {
     try {
       const uniqueId = new Date().getTime().toString() + Math.floor(Math.random() * 1000).toString();
       
+      const conditionValue = scannedData.CardCondition === "EX" ? 400011 :
+                            scannedData.CardCondition === "VG" ? 400012 :
+                            scannedData.CardCondition === "PO" ? 400013 : 400010;
+      const isGraded = scannedData.Graded === true || String(scannedData.Graded).toLowerCase() === 'true';
+
       const payload = {
         ID: uniqueId,
         Name: scannedData.Name,
@@ -193,6 +198,12 @@ export default function AdminScanner() {
         Parallel: scannedData.Parallel || "",
         Serial: scannedData.Serial || "",
         Auto: scannedData.Auto || false,
+        CardCondition: scannedData.CardCondition || "NM",
+        ConditionValue: conditionValue,
+        ConditionId: isGraded ? 2750 : 4000,
+        Graded: isGraded,
+        Manufacturer: scannedData.Manufacturer || "Unknown",
+        CardNumber: scannedData.CardNumber || "",
         ImageURL: scannedData.ImageURL,
         ImageURLBack: scannedData.ImageURLBack || "",
         Approved: false,
@@ -464,6 +475,23 @@ export default function AdminScanner() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Manufacturer</label>
+                  <input
+                    type="text" name="Manufacturer" value={scannedData.Manufacturer || ''} onChange={handleInputChange} placeholder="e.g. Topps"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors placeholder:text-slate-700"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Card Number</label>
+                  <input
+                    type="text" name="CardNumber" value={scannedData.CardNumber || ''} onChange={handleInputChange} placeholder="e.g. RC-1"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors placeholder:text-slate-700"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Category</label>
                 <select 
@@ -498,6 +526,33 @@ export default function AdminScanner() {
                     type="text" name="Serial" value={scannedData.Serial} onChange={handleInputChange} placeholder="e.g. 10/99"
                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-amber-400 focus:outline-none focus:border-amber-500 transition-colors placeholder:text-slate-700"
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Condition</label>
+                  <select
+                    name="CardCondition" value={scannedData.CardCondition || 'NM'} onChange={handleInputChange}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors appearance-none"
+                  >
+                    <option value="NM">Near Mint or Better (NM)</option>
+                    <option value="EX">Excellent (EX)</option>
+                    <option value="VG">Very Good (VG)</option>
+                    <option value="PO">Poor (PO)</option>
+                  </select>
+                </div>
+                <div className="flex items-center justify-center bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 mt-5">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="Graded"
+                      checked={scannedData.Graded || false}
+                      onChange={handleInputChange}
+                      className="w-5 h-5 accent-emerald-500 bg-slate-900 border-slate-700 rounded"
+                    />
+                    <span className="text-sm font-bold text-slate-300 uppercase tracking-wider">Graded Slab</span>
+                  </label>
                 </div>
               </div>
 
