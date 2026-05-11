@@ -40,8 +40,8 @@ export default function SwipingDeck({ inventory }) {
         <svg className="w-16 h-16 mb-4 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
-        <p className="text-xl font-medium">Bin Empty!</p>
-        <p className="text-sm">You've cleared out this entire bin.</p>
+        <p className="text-xl font-medium">All Caught Up!</p>
+        <p className="text-sm">There are no more cards to review.</p>
       </div>
     );
   }
@@ -135,13 +135,13 @@ function Card({ card, isTop, relativeIndex, handleDragEnd }) {
           {isTop && (
             <>
               <motion.div style={{ opacity: swipeRightOpacity }} className="absolute inset-0 z-20 bg-emerald-500/20 border-4 border-emerald-500 rounded-2xl pointer-events-none flex items-center justify-center overflow-hidden">
-                <motion.div style={{ scale: stampScaleRight }} className="border-4 border-emerald-500 text-emerald-500 text-5xl font-black uppercase tracking-widest px-8 py-3 rounded-xl transform -rotate-12 bg-slate-900/80 backdrop-blur-md shadow-[0_0_30px_rgba(16,185,129,0.5)]">
-                  KEEP
+                <motion.div style={{ scale: stampScaleRight }} className="border-4 border-emerald-500 text-emerald-500 text-4xl font-black uppercase tracking-widest px-8 py-3 rounded-xl transform -rotate-12 bg-slate-900/80 backdrop-blur-md shadow-[0_0_30px_rgba(16,185,129,0.5)] text-center">
+                  QUEUE<br/><span className="text-xl">FOR EBAY</span>
                 </motion.div>
               </motion.div>
               <motion.div style={{ opacity: swipeLeftOpacity }} className="absolute inset-0 z-20 bg-rose-500/20 border-4 border-rose-500 rounded-2xl pointer-events-none flex items-center justify-center overflow-hidden">
                 <motion.div style={{ scale: stampScaleLeft }} className="border-4 border-rose-500 text-rose-500 text-5xl font-black uppercase tracking-widest px-8 py-3 rounded-xl transform rotate-12 bg-slate-900/80 backdrop-blur-md shadow-[0_0_30px_rgba(243,64,84,0.5)]">
-                  PASS
+                  SKIP
                 </motion.div>
               </motion.div>
             </>
@@ -155,9 +155,9 @@ function Card({ card, isTop, relativeIndex, handleDragEnd }) {
               <div className="w-full h-full flex items-center justify-center text-slate-700 bg-slate-950 font-medium">No Image</div>
             )}
             
-            {/* Price Badge */}
-            <div className="absolute top-4 right-4 z-10 bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-bold px-4 py-1.5 rounded-full shadow-lg border border-amber-300">
-              ${card.PriceBin} Bin
+            {/* Condition Badge */}
+            <div className="absolute top-4 right-4 z-10 bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950 font-bold px-4 py-1.5 rounded-full shadow-lg border border-emerald-300">
+              {card.CardCondition || 'NM'}
             </div>
 
             {/* Special Features Badges */}

@@ -2,7 +2,7 @@ import InventoryLoader from "@/components/InventoryLoader";
 
 export const metadata = {
   title: 'DailyCardBin',
-  description: 'Gamified, Tinder-style swiping deck sports card store',
+  description: 'Inventory Tracker and eBay Lister',
 };
 
 export default function Home() {
@@ -14,10 +14,10 @@ export default function Home() {
         {/* Welcome Section */}
         <div className="text-center mb-6 max-w-2xl">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400">
-            Welcome to the Bin
+            Inventory Tracker
           </h1>
           <p className="text-base text-slate-400 leading-relaxed">
-            Swipe right to add to your bundle. Snag 5 from the $1 bin for $4.50!
+            Swipe right to queue a card for an eBay draft. Swipe left to skip.
           </p>
         </div>
 
