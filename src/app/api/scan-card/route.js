@@ -71,6 +71,12 @@ export async function POST(request) {
           Parallel: '',
           Serial: '',
           Auto: false,
+          CardCondition: 'NM',
+          ConditionValue: 400010,
+          ConditionId: 4000,
+          Graded: false,
+          Manufacturer: 'Unknown',
+          CardNumber: '',
           ImageURL: imageUrlFront,
           ImageURLBack: imageUrlBack,
         }
@@ -90,12 +96,16 @@ export async function POST(request) {
       Use the text on the back of the card (if provided) to help accurately identify the Year and Set.
       Extract the following information:
       1. Name: The full name of the player.
-      2. Set: The brand and set name (e.g., "Topps Chrome", "Panini Prizm").
+      2. Set: The full set name (e.g., "Topps Chrome", "Panini Prizm").
       3. Year: The year of the card (e.g., "2003", "1989"). If you only see a season like "19-20", write "2019".
       4. Category: Identify the sport or category. Must be one of: Baseball, Basketball, Football, Soccer, Hockey, Racing, Fighting, Pokemon, Magic, Entertainment, Other.
       5. Parallel: The specific color or parallel type if any (e.g., "Silver Prizm", "Red Refractor"). Leave empty if it's just a base card.
       6. Serial: Any serial numbering printed or stamped on the card (e.g., "10/99", "1/1"). Leave empty if none.
       7. Auto: true or false. Is the card visibly autographed/signed by the player?
+      8. CardCondition: Estimate the condition. Choose one of: "NM" (Near Mint or Better), "EX" (Excellent), "VG" (Very Good), "PO" (Poor). If unsure, default to "NM".
+      9. Graded: true or false. Is the card in a graded slab (e.g., PSA, BGS, SGC)?
+      10. Manufacturer: The manufacturer of the card (e.g., "Topps", "Panini", "Upper Deck", "Bowman").
+      11. CardNumber: The card number printed on the back (e.g., "1", "RC-1", "240"). Leave empty if none or not visible.
       
       Respond ONLY with a valid, raw JSON object exactly like this:
       {
@@ -105,7 +115,11 @@ export async function POST(request) {
         "Category": "Basketball",
         "Parallel": "Color/Parallel Name",
         "Serial": "Numbering",
-        "Auto": false
+        "Auto": false,
+        "CardCondition": "NM",
+        "Graded": false,
+        "Manufacturer": "Topps",
+        "CardNumber": "1"
       }
       Do not include markdown formatting (like \`\`\`json) or any other text. Just the raw JSON object.
     `;
@@ -125,13 +139,27 @@ export async function POST(request) {
     // Clean up the response
     let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
     
-    let cardData = { Name: "Unknown", Set: "Unknown", Year: "Unknown", Category: "Other", Parallel: "", Serial: "", Auto: false };
+    let cardData = {
+      Name: "Unknown", Set: "Unknown", Year: "Unknown", Category: "Other",
+      Parallel: "", Serial: "", Auto: false, CardCondition: "NM",
+      Graded: false, Manufacturer: "Unknown", CardNumber: ""
+    };
 
     try {
       cardData = JSON.parse(cleanedText);
     } catch (parseError) {
       console.error("Failed to parse Gemini output as JSON:", cleanedText);
     }
+
+    // Map CardCondition to eBay 2026 numeric ConditionValue
+    let conditionValue = 400010; // Default NM
+    const condition = (cardData.CardCondition || "").toUpperCase();
+    if (condition === "EX") conditionValue = 400011;
+    else if (condition === "VG") conditionValue = 400012;
+    else if (condition === "PO") conditionValue = 400013;
+
+    const isGraded = cardData.Graded === true || String(cardData.Graded).toLowerCase() === 'true';
+    const conditionId = isGraded ? 2750 : 4000;
 
     // Return the combined data
     return NextResponse.json({
@@ -144,6 +172,12 @@ export async function POST(request) {
         Parallel: cardData.Parallel || "",
         Serial: cardData.Serial || "",
         Auto: cardData.Auto || false,
+        CardCondition: cardData.CardCondition || "NM",
+        ConditionValue: conditionValue,
+        ConditionId: conditionId,
+        Graded: isGraded,
+        Manufacturer: cardData.Manufacturer || "Unknown",
+        CardNumber: cardData.CardNumber || "",
         ImageURL: imageUrlFront,
         ImageURLBack: imageUrlBack
       }
