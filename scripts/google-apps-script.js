@@ -53,7 +53,7 @@ function doPost(e) {
     var sheetName = data['Category'] || "Uncategorized";
     var sheet = ss.getSheetByName(sheetName);
 
-    var expectedHeaders = ['ID', 'Name', 'Set', 'Year', 'Category', 'PriceBin', 'Parallel', 'Serial', 'Auto', 'CardCondition', 'ConditionValue', 'ConditionId', 'Graded', 'Manufacturer', 'CardNumber', 'ImageURL', 'ImageURLBack', 'Approved', 'Sold', 'Sport', 'AveragePrice', 'LastUpdated'];
+    var expectedHeaders = ['ID', 'Name', 'Set', 'Year', 'Category', 'Parallel', 'Serial', 'Auto', 'CardCondition', 'ConditionValue', 'ConditionId', 'Graded', 'Manufacturer', 'CardNumber', 'ImageURL', 'ImageURLBack', 'Approved', 'Sold', 'Sport', 'AveragePrice', 'LastUpdated'];
 
     // Create sheet if it doesn't exist
     if (!sheet) {
@@ -206,7 +206,9 @@ function onEdit(e) {
 }
 
 function updateSoldTotal(soldSheet, headers) {
-  var priceIndex = headers.indexOf("PriceBin") + 1;
+  var priceIndex = headers.indexOf("AveragePrice") + 1;
+  if (priceIndex === 0) return; // if no AveragePrice column, we skip calculation
+
   var dataRange = soldSheet.getDataRange();
   var values = dataRange.getValues();
   var total = 0;
@@ -219,7 +221,7 @@ function updateSoldTotal(soldSheet, headers) {
   }
 
   // Write to a summary cell
-  soldSheet.getRange(1, headers.length + 2).setValue("Total Sold:");
+  soldSheet.getRange(1, headers.length + 2).setValue("Total Value Sold:");
   soldSheet.getRange(2, headers.length + 2).setValue(total);
 }
 

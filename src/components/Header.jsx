@@ -19,9 +19,9 @@ export default function Header() {
           className="relative p-2 text-slate-300 hover:text-white transition-colors flex items-center gap-2 bg-slate-800 hover:bg-slate-700 rounded-lg px-4"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          <span className="font-medium text-sm">Bundle</span>
+          <span className="font-medium text-sm">eBay Queue</span>
           {bundle.length > 0 && (
             <span className="absolute -top-2 -right-2 bg-emerald-500 text-slate-950 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border-2 border-slate-900">
               {bundle.length}
